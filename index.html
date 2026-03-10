@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume & Skill Analyzer</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Resume & Skill Analyzer</h1>
+
+<div class="bottom-container">
+    <div class="input-group">
+
+        <input type="text" placeholder="Type your skills here..." id="skills">
+
+        <input type="file" id="resume" hidden>
+        <label for="resume" class="upload-btn">Upload Resume</label>
+
+    </div>
+
+    <button onclick="analyze()">Analyze</button>
+
+    <div id="analysis">Your analysis will appear here.</div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
