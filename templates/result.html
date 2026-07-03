@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resume Analysis Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <span class="eyebrow">Review Complete</span>
+    <h1>Your Match Report</h1>
+
+    {% if score >= 70 %}
+        {% set verdict = "Strong match — you're well aligned with this role." %}
+        {% set stamp_color = "#7C9473" %}
+    {% elif score >= 45 %}
+        {% set verdict = "Partial match — a few targeted additions will help." %}
+        {% set stamp_color = "#2B3A55" %}
+    {% else %}
+        {% set verdict = "Needs work — several key terms are missing." %}
+        {% set stamp_color = "#C1432B" %}
+    {% endif %}
+
+    <div class="score-row">
+        <div class="stamp" style="--stamp-color: {{ stamp_color }};">
+            <span class="stamp-score">{{ score }}%</span>
+            <span class="stamp-label">Match Score</span>
+        </div>
+        <div class="score-summary">
+            <h2>{{ verdict }}</h2>
+            <p>Here's how that score breaks down, and exactly what to add.</p>
+
+            <div class="breakdown">
+                <div class="breakdown-row">
+                    <span>Semantic</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: {{ (raw_score_components.semantic / 50 * 100) }}%; --bar-color:#2B3A55;"></div></div>
+                    <span>{{ raw_score_components.semantic }}</span>
+                </div>
+                <div class="breakdown-row">
+                    <span>Keywords</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: {{ (raw_score_components.keywords / 30 * 100) }}%; --bar-color:#C1432B;"></div></div>
+                    <span>{{ raw_score_components.keywords }}</span>
+                </div>
+                <div class="breakdown-row">
+                    <span>Student Bonus</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: {{ (raw_score_components.education_bonus / 20 * 100) }}%; --bar-color:#F5D547;"></div></div>
+                    <span>{{ raw_score_components.education_bonus }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if ai_feedback %}
+    <div class="section-block ai-feedback">
+        <h3>🧠Reviewer Notes</h3>
+        <p class="section-note">A closer read of your resume against this role.</p>
+
+        <div class="ai-feedback-grid">
+            {% if ai_feedback.strengths %}
+            <div class="ai-feedback-col strengths">
+                <h4>What's working</h4>
+                <ul>
+                    {% for point in ai_feedback.strengths %}<li>{{ point }}</li>{% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if ai_feedback.weaknesses %}
+            <div class="ai-feedback-col weaknesses">
+                <h4>What's holding it back</h4>
+                <ul>
+                    {% for point in ai_feedback.weaknesses %}<li>{{ point }}</li>{% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if ai_feedback.suggestions %}
+        <div class="ai-feedback-suggestions">
+            <h4>Try this</h4>
+            <ul>
+                {% for point in ai_feedback.suggestions %}<li>{{ point }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="section-block">
+        <h3>✅ Matching Keywords <span class="count">{{ common_keywords|length }} found</span></h3>
+        <p class="section-note">Already present in your resume and the job description.</p>
+        {% if common_keywords %}
+        <div class="tag-cloud">
+            {% for kw in common_keywords %}<span class="tag match">{{ kw }}</span> {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-note">No overlapping keywords found yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section-block">
+        <h3>🚨 Skills to Add <span class="count">{{ missing_keywords|length }} missing</span></h3>
+        <p class="section-note">Mentioned in the job description but not in your resume — highest-priority additions.</p>
+        {% if missing_keywords %}
+        <div class="tag-cloud">
+            {% for kw in missing_keywords %}<span class="tag missing">{{ kw }}</span> {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-note">Nothing missing — great coverage!</p>
+        {% endif %}
+    </div>
+
+    <div class="section-block">
+        <h3>📋 Your Top Keywords</h3>
+        <div class="tag-cloud">
+            {% for kw in resume_keywords %}<span class="tag neutral">{{ kw }}</span> {% endfor %}
+        </div>
+    </div>
+
+    <div class="section-block">
+        <h3>🎯 Job Keywords</h3>
+        <div class="tag-cloud">
+            {% for kw in job_keywords %}<span class="tag neutral">{{ kw }}</span> {% endfor %}
+        </div>
+    </div>
+
+    {% if has_education or has_projects %}
+    <div class="student-tip">
+        <h3>Student Success Tip</h3>
+        <p>
+            {% if has_education and has_projects %}
+                Great — you have both an education and a projects section. That's exactly what reviewers look for.
+            {% elif has_education %}
+                Good education section detected. Add a projects section to round out your resume.
+            {% elif has_projects %}
+                Excellent projects section. Make sure your education is clearly listed too.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="/" class="btn">Analyze Another Resume</a>
+    </div>
+</div>
+</body>
+</html>

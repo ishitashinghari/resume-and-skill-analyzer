@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resume Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <span class="eyebrow">Resume × Job Description</span>
+        <h1>Resume Analyzer</h1>
+        <p class="subtitle">Upload your resume and paste the job description. You'll get a match score, a breakdown of why, and the exact keywords to add.</p>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <label class="field-label" for="resume">Resume (PDF)</label>
+            <div class="dropzone" id="dropzone">
+                <span class="dropzone-icon">📄</span>
+                <span class="dropzone-text">Click to choose a file or drag it here</span>
+                <span class="dropzone-hint">PDF only</span>
+                <input type="file" id="resume" name="resume" accept="application/pdf" required>
+            </div>
+            <div class="file-name" id="fileName"></div>
+
+            <label class="field-label" for="jobdesc">Job Description</label>
+            <textarea id="jobdesc" name="jobdesc" placeholder="Paste the full job description here…" required></textarea>
+
+            <button type="submit">Analyze My Resume</button>
+        </form>
+    </div>
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('resume');
+        const fileName = document.getElementById('fileName');
+
+        fileInput.addEventListener('change', () => {
+            fileName.textContent = fileInput.files.length ? `Selected: ${fileInput.files[0].name}` : '';
+        });
+
+        ['dragenter', 'dragover'].forEach(evt =>
+            dropzone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            })
+        );
+
+        ['dragleave', 'drop'].forEach(evt =>
+            dropzone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+            })
+        );
+
+        dropzone.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = `Selected: ${fileInput.files[0].name}`;
+            }
+        });
+    </script>
+</body>
+</html>
